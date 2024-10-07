@@ -102,6 +102,7 @@ body {
   display: flex;
   gap: 2.5rem;
   max-width: 100%;
+  padding: 2rem;
 
   button {
     color: #ffffff;

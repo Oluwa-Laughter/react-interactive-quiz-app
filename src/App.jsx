@@ -1,5 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { questions } from "./Question";
+import AnswerSection from "./component/AnswerSection";
+import QuestionSection from "./component/QuestionSection";
+import ScoreSection from "./component/ScoreSection";
+import StartQuiz from "./component/StartQuiz";
 
 export default function App() {
   const [questionId, setQuestionId] = useState(1);
@@ -91,104 +95,34 @@ export default function App() {
       {!quizStart ? (
         <StartQuiz onStart={handleStartQuiz} questions={questions} />
       ) : showScore ? (
-        <section className="score-section">
-          <h3>
-            You scored {calculateScore()} out of {questions.length}
-          </h3>
-          <div className="restart-review">
-            <Button onClick={resetQuiz}>Play Again</Button>
-            <Button onClick={handleReview}>Review Answers</Button>
-          </div>
-
-          <img src="/image/award.svg" alt="winner" />
-        </section>
+        <ScoreSection
+          calculateScore={calculateScore}
+          questions={questions}
+          resetQuiz={resetQuiz}
+          handleReview={handleReview}
+        />
       ) : (
         <>
-          <section className="question-section">
-            <h2 className="question-count">
-              Question {questionId}/{questions.length}
-            </h2>
-            <p className="question-text">{curQuestion.question}</p>
-            {!reviewMode && (
-              <span className="timer">
-                Time left: {Math.floor(timeLeft / 60)}:
-                {timeLeft % 60 < 10 ? "0" : ""}
-                {timeLeft % 60}
-              </span>
-            )}
-          </section>
+          <QuestionSection
+            questionId={questionId}
+            questions={questions}
+            curQuestion={curQuestion}
+            reviewMode={reviewMode}
+            timeLeft={timeLeft}
+          />
 
-          <section className="answer-section">
-            <div className="answers">
-              {curQuestion.answers.map((answer, i) => {
-                let className = "answer-button";
-                if (reviewMode) {
-                  if (answer.correct) {
-                    className += " correct";
-                  } else if (userAnswers[questionId] === i && !answer.correct) {
-                    className += " incorrect";
-                  }
-                } else if (userAnswers[questionId] === i) {
-                  className += " selected";
-                }
-
-                return (
-                  <Button
-                    key={i}
-                    className={className}
-                    onClick={() => handleAnswer(i)}
-                    disabled={reviewMode}
-                  >
-                    {answer.text}
-                  </Button>
-                );
-              })}
-            </div>
-
-            <div className="buttons">
-              {questionId > 1 && (
-                <Button className="back_btn" onClick={handlePrevQues}>
-                  Back
-                </Button>
-              )}
-              <Button className="next_btn" onClick={handleNextQues}>
-                {questionId === questions.length ? "Submit" : "Next"}
-              </Button>
-            </div>
-          </section>
+          <AnswerSection
+            curQuestion={curQuestion}
+            userAnswers={userAnswers}
+            questionId={questionId}
+            handleAnswer={handleAnswer}
+            reviewMode={reviewMode}
+            handlePrevQues={handlePrevQues}
+            questions={questions}
+            handleNextQues={handleNextQues}
+          />
         </>
       )}
     </main>
-  );
-}
-
-function StartQuiz({ onStart, questions }) {
-  return (
-    <section className="start-quiz">
-      <h1>Welcome to React Interactive Quiz!</h1>
-      <div className="instructions">
-        <p>Instructions:</p>
-        <ul>
-          <li>You have 15 minutes to complete the quiz.</li>
-          <li>There are {questions.length} questions in total.</li>
-          <li>Each correct answer is worth 1 point.</li>
-          <li>
-            You can navigate between questions using the Next and Back buttons.
-          </li>
-          <li>Your score will be displayed at the end of the quiz.</li>
-        </ul>
-      </div>
-      <Button className="start-btn" onClick={onStart}>
-        Start Quiz
-      </Button>
-    </section>
-  );
-}
-
-function Button({ children, onClick, className, disabled }) {
-  return (
-    <button className={className} onClick={onClick} disabled={disabled}>
-      {children}
-    </button>
   );
 }
