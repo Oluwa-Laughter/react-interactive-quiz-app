@@ -1,29 +1,7 @@
 import { useEffect, useState, useRef } from "react";
+import { questions } from "./Question";
 
 export default function App() {
-  const questions = [
-    {
-      id: 1,
-      question: "What is the capital of France?",
-      answers: [
-        { text: "Berlin", correct: false },
-        { text: "Madrid", correct: false },
-        { text: "Paris", correct: true },
-        { text: "Rome", correct: false },
-      ],
-    },
-    {
-      id: 2,
-      question: "Which planet is known as the Red Planet?",
-      answers: [
-        { text: "Venus", correct: false },
-        { text: "Mars", correct: true },
-        { text: "Jupiter", correct: false },
-        { text: "Saturn", correct: false },
-      ],
-    },
-  ];
-
   const [questionId, setQuestionId] = useState(1);
   const [userAnswers, setUserAnswers] = useState({});
   const [showScore, setShowScore] = useState(false);
@@ -121,6 +99,8 @@ export default function App() {
             <Button onClick={resetQuiz}>Play Again</Button>
             <Button onClick={handleReview}>Review Answers</Button>
           </div>
+
+          <img src="/image/award.svg" alt="winner" />
         </section>
       ) : (
         <>
@@ -139,29 +119,31 @@ export default function App() {
           </section>
 
           <section className="answer-section">
-            {curQuestion.answers.map((answer, i) => {
-              let className = "answer-button";
-              if (reviewMode) {
-                if (answer.correct) {
-                  className += " correct";
-                } else if (userAnswers[questionId] === i && !answer.correct) {
-                  className += " incorrect";
+            <div className="answers">
+              {curQuestion.answers.map((answer, i) => {
+                let className = "answer-button";
+                if (reviewMode) {
+                  if (answer.correct) {
+                    className += " correct";
+                  } else if (userAnswers[questionId] === i && !answer.correct) {
+                    className += " incorrect";
+                  }
+                } else if (userAnswers[questionId] === i) {
+                  className += " selected";
                 }
-              } else if (userAnswers[questionId] === i) {
-                className += " selected";
-              }
 
-              return (
-                <Button
-                  key={i}
-                  className={className}
-                  onClick={() => handleAnswer(i)}
-                  disabled={reviewMode}
-                >
-                  {answer.text}
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={i}
+                    className={className}
+                    onClick={() => handleAnswer(i)}
+                    disabled={reviewMode}
+                  >
+                    {answer.text}
+                  </Button>
+                );
+              })}
+            </div>
 
             <div className="buttons">
               {questionId > 1 && (
@@ -182,7 +164,7 @@ export default function App() {
 
 function StartQuiz({ onStart, questions }) {
   return (
-    <div className="start-quiz">
+    <section className="start-quiz">
       <h1>Welcome to React Interactive Quiz!</h1>
       <div className="instructions">
         <p>Instructions:</p>
@@ -199,7 +181,7 @@ function StartQuiz({ onStart, questions }) {
       <Button className="start-btn" onClick={onStart}>
         Start Quiz
       </Button>
-    </div>
+    </section>
   );
 }
 
